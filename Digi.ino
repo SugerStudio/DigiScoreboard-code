@@ -1,31 +1,7 @@
-#include <GxEPD2_3C.h>
-#include <Fonts/FreeMonoBold12pt7b.h>
+#include <GxEPD2_BW.h>
+#include <Fonts/FreeMonoBold24pt7b.h>
 
-GxEPD2_3C<GxEPD2_750c_GDEY075Z08, GxEPD2_750c_GDEY075Z08::HEIGHT / 4> display(GxEPD2_750c_GDEY075Z08(2, 3, 4, 5));
-
-const int pins[] = {21, 9, 6, 7, 20};
-const int numButtons = 5;
-
-int tally[5] = {0, 0, 0, 0, 0};
-bool lastPressed[5] = {false, false, false, false, false};
-
-void drawTally() {
-  display.setFullWindow();
-  display.firstPage();
-  do {
-    display.fillScreen(GxEPD_WHITE);
-    display.setFont(&FreeMonoBold12pt7b);
-    display.setTextColor(GxEPD_BLACK);
-
-    for (int i = 0; i < numButtons; i++) {
-      display.setCursor(40, 60 + i * 70);
-      display.print("Btn ");
-      display.print(i + 1);
-      display.print(": ");
-      display.print(tally[i]);
-    }
-  } while (display.nextPage());
-}
+GxEPD2_BW<GxEPD2_750_GDEY075T7, GxEPD2_750_GDEY075T7::HEIGHT> display(GxEPD2_750_GDEY075T7(2, 3, 4, 5));
 
 void setup() {
   Serial.begin(115200);
@@ -34,38 +10,29 @@ void setup() {
   display.init(115200, true, 50, false);
   display.setRotation(0);
 
-  for (int i = 0; i < numButtons; i++) {
-    pinMode(pins[i], INPUT_PULLUP);
-  }
+  Serial.println("Clearing display...");
+  display.setFullWindow();
+  display.firstPage();
+  do {
+    display.fillScreen(GxEPD_WHITE);
+  } while (display.nextPage());
 
-  Serial.println("Drawing initial tally...");
-  drawTally();
-  Serial.println("Draw complete.");
-  Serial.println("Ready.");
+  delay(500);
+
+  Serial.println("Drawing scoreboard...");
+  display.firstPage();
+  do {
+    display.fillScreen(GxEPD_WHITE);
+    display.setFont(&FreeMonoBold24pt7b);
+    display.setTextColor(GxEPD_BLACK);
+    display.setCursor(30, 100);
+    display.print("A: 0");
+    display.setCursor(30, 200);
+    display.print("B: 0");
+  } while (display.nextPage());
+
+  Serial.println("Done.");
 }
 
 void loop() {
-  bool needsRedraw = false;
-
-  for (int i = 0; i < numButtons; i++) {
-    bool pressed = (digitalRead(pins[i]) == LOW);
-
-    if (pressed && !lastPressed[i]) {
-      tally[i]++;
-      Serial.print("Btn ");
-      Serial.print(i + 1);
-      Serial.print(" total: ");
-      Serial.println(tally[i]);
-      needsRedraw = true;
-    }
-
-    lastPressed[i] = pressed;
-  }
-
-  if (needsRedraw) {
-    Serial.println("Drawing now...");
-    drawTally();
-    Serial.println("Draw complete.");
-    delay(200);
-  }
 }
