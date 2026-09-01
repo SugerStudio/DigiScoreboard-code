@@ -1,7 +1,7 @@
 #include <GxEPD2_3C.h>
 #include <Fonts/FreeMonoBold12pt7b.h>
 
-GxEPD2_3C<GxEPD2_750c_GDEY075Z08, GxEPD2_750c_GDEY075Z08::HEIGHT / 4> display(GxEPD2_750c_GDEY075Z08(3, 5, 2, 4));
+GxEPD2_3C<GxEPD2_750c_GDEY075Z08, GxEPD2_750c_GDEY075Z08::HEIGHT / 4> display(GxEPD2_750c_GDEY075Z08(2, 3, 4, 5));
 
 const int pins[] = {21, 9, 6, 7, 20};
 const int numButtons = 5;
